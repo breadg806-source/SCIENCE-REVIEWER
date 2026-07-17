@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STS Practice Exam — Field Specimens 1–50</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f211d;
+    --panel:#16302a;
+    --panel-2:#193830;
+    --line:#2c4a40;
+    --ink:#ecefe9;
+    --ink-dim:#93ab9f;
+    --amber:#f2b84b;
+    --amber-dim:#8a6d31;
+    --green:#6fcf97;
+    --green-deep:#274a37;
+    --red:#e8685a;
+    --red-deep:#4a2b28;
+    --display: 'Space Mono', monospace;
+    --body: 'Source Serif 4', Georgia, serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(242,184,75,0.05), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(111,207,151,0.05), transparent 40%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:24px;
+  }
+
+  /* faint grid, like graph/lab paper */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(236,239,233,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(236,239,233,0.035) 1px, transparent 1px);
+    background-size:28px 28px;
+    pointer-events:none;
+  }
+
+  /* ---------- Floating margin notes: formulas & specimen marks ---------- */
+  .field-notes{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .note{
+    position:absolute;
+    font-family:var(--display);
+    color:var(--ink-dim);
+    opacity:0.16;
+    white-space:nowrap;
+    animation:drift 22s ease-in-out infinite;
+  }
+  .note.slow{ animation-duration:32s; }
+  .note.fast{ animation-duration:16s; }
+  .note.amber{ color:var(--amber-dim); }
+
+  .note.n1{ top:8%;  left:6%;  font-size:1.3rem;  animation-delay:0s; }
+  .note.n2{ top:16%; right:7%; font-size:1.6rem;  animation-delay:-4s; }
+  .note.n3{ bottom:20%; left:5%; font-size:1.1rem; animation-delay:-9s; }
+  .note.n4{ bottom:10%; right:6%; font-size:1.4rem; animation-delay:-2s; }
+  .note.n5{ top:44%; left:3%;  font-size:0.95rem; animation-delay:-14s; }
+  .note.n6{ top:38%; right:4%; font-size:1rem;    animation-delay:-6s; }
+  .note.n7{ top:70%; left:9%;  font-size:1.2rem;  animation-delay:-18s; }
+  .note.n8{ top:4%;  left:38%; font-size:0.9rem;  animation-delay:-11s; }
+
+  @keyframes drift{
+    0%,100%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(6px,-10px) rotate(-2deg); }
+  }
+
+  .orbit-mark{
+    position:absolute;
+    top:50%; left:50%;
+    width:60px; height:60px;
+    margin:-30px 0 0 -30px;
+    opacity:0.05;
+    animation:spin 40s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  @media (max-width:600px){
+    .note{ display:none; }
+  }
+
+  .card{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:600px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:2px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.35);
+    padding:28px 30px 24px;
+  }
+
+  /* corner ticks like a specimen slide */
+  .card::before, .card::after{
+    content:"";
+    position:absolute;
+    width:14px;
+    height:14px;
+    border:1px solid var(--amber-dim);
+  }
+  .card::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .card::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+  /* ---------- Header ---------- */
+  .eyebrow{
+    font-family:var(--display);
+    font-size:0.68rem;
+    letter-spacing:0.18em;
+    color:var(--amber);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+
+  .beaker-wrap{ display:flex; align-items:center; gap:6px; }
+  .beaker-score{ font-family:var(--display); font-size:0.72rem; color:var(--ink-dim); }
+
+  /* ruler progress: 50 ticks, meaningful — one per question */
+  .ruler{
+    display:flex;
+    gap:2px;
+    height:14px;
+    margin-bottom:18px;
+    align-items:flex-end;
+  }
+  .tick{
+    flex:1;
+    height:5px;
+    background:var(--line);
+    border-radius:1px;
+    transition:height 0.25s ease, background 0.25s ease;
+  }
+  .tick.done{ background:var(--amber-dim); height:9px; }
+  .tick.current{ background:var(--amber); height:14px; }
+
+  .specimen-tag{
+    font-family:var(--display);
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    color:var(--ink-dim);
+    border-left:2px solid var(--amber);
+    padding-left:10px;
+    margin-bottom:16px;
+    text-transform:uppercase;
+  }
+  .specimen-tag b{ color:var(--amber); font-weight:700; }
+
+  .question{
+    font-family:var(--body);
+    font-size:1.22rem;
+    line-height:1.45;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+
+  /* ---------- Options: periodic-tile buttons ---------- */
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:22px;
+  }
+
+  .opt{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    width:100%;
+    text-align:left;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-family:var(--body);
+    font-size:1rem;
+    color:var(--ink);
+    transition:border-color 0.15s ease, transform 0.1s ease, background 0.15s ease;
+  }
+  .opt:hover:not(:disabled){
+    border-color:var(--amber-dim);
+    transform:translateX(2px);
+    background:#1c3e35;
+  }
+  .opt:disabled{ cursor:default; }
+
+  .tile{
+    flex:none;
+    width:34px;
+    height:34px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:1rem;
+    color:var(--ink-dim);
+    background:var(--bg);
+    transition:all 0.15s ease;
+  }
+  .tile .idx{
+    position:absolute;
+    top:2px;
+    left:3px;
+    font-size:0.5rem;
+    font-weight:400;
+    color:var(--ink-dim);
+    opacity:0.7;
+  }
+
+  .opt-label{ flex:1; }
+
+  .opt.correct{
+    background:var(--green-deep);
+    border-color:var(--green);
+  }
+  .opt.correct .tile{ background:var(--green); color:#0f211d; border-color:var(--green); }
+  .opt.wrong{
+    background:var(--red-deep);
+    border-color:var(--red);
+  }
+  .opt.wrong .tile{ background:var(--red); color:#0f211d; border-color:var(--red); }
+
+  .footnote{
+    font-family:var(--display);
+    font-size:0.68rem;
+    color:var(--ink-dim);
+    letter-spacing:0.04em;
+    min-height:1.2em;
+    margin-bottom:10px;
+  }
+
+  .actions{ display:flex; justify-content:flex-end; }
+
+  .btn-next{
+    font-family:var(--display);
+    background:var(--amber);
+    color:#1c2621;
+    border:none;
+    border-radius:3px;
+    padding:11px 22px;
+    font-size:0.82rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    font-weight:700;
+    cursor:pointer;
+    display:none;
+    transition:background 0.15s ease, transform 0.1s ease;
+  }
+  .btn-next:hover{ background:#f7c968; transform:translateY(-1px); }
+
+  /* ---------- Results ---------- */
+  .results{ display:none; text-align:center; }
+  .results h2{
+    font-family:var(--display);
+    font-size:0.85rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:0 0 18px;
+  }
+
+  .beaker-final{ margin:0 auto 18px; display:block; }
+
+  .final-score{
+    font-family:var(--display);
+    font-size:2.6rem;
+    font-weight:700;
+    color:var(--ink);
+    margin:6px 0 4px;
+  }
+  .final-score span{ color:var(--ink-dim); font-size:1.4rem; }
+
+  .grade-tag{
+    display:inline-block;
+    font-family:var(--display);
+    font-size:0.75rem;
+    letter-spacing:0.08em;
+    padding:6px 14px;
+    border-radius:3px;
+    margin-bottom:16px;
+  }
+
+  .comment{
+    font-family:var(--body);
+    font-size:1rem;
+    color:var(--ink-dim);
+    margin-bottom:22px;
+    line-height:1.5;
+  }
+
+  .btn-restart{
+    font-family:var(--display);
+    background:transparent;
+    color:var(--amber);
+    border:1px solid var(--amber-dim);
+    border-radius:3px;
+    padding:11px 24px;
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:all 0.15s ease;
+  }
+  .btn-restart:hover{ background:var(--amber); color:#1c2621; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+
+  @media (max-width:480px){
+    .card{ padding:20px 18px; }
+    .question{ font-size:1.08rem; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="field-notes" aria-hidden="true">
+    <span class="note n1">E = mc²</span>
+    <span class="note n2 amber">H₂O</span>
+    <span class="note n3">a² + b² = c²</span>
+    <span class="note n4 amber">F = ma</span>
+    <span class="note n5 slow">π ≈ 3.14159</span>
+    <span class="note n6 fast">DNA · ATCG</span>
+    <span class="note n7 amber slow">v = λf</span>
+    <span class="note n8">∆G = ∆H − T∆S</span>
+    <svg class="orbit-mark" viewBox="0 0 60 60" fill="none">
+      <circle cx="30" cy="30" r="3" fill="#f2b84b"/>
+      <ellipse cx="30" cy="30" rx="27" ry="11" stroke="#ecefe9" stroke-width="1"/>
+      <ellipse cx="30" cy="30" rx="27" ry="11" stroke="#ecefe9" stroke-width="1" transform="rotate(60 30 30)"/>
+      <ellipse cx="30" cy="30" rx="27" ry="11" stroke="#ecefe9" stroke-width="1" transform="rotate(120 30 30)"/>
+    </svg>
+  </div>
+
+  <div class="card">
+    <div id="quiz-area">
+      <div class="eyebrow">
+        <span>STS FIELD EXAM · No. <span id="q-index">01</span>/50</span>
+        <span class="beaker-wrap">
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+            <path d="M5 1H9V6L12.5 13.5C13 14.6 12.2 15.5 11 15.5H3C1.8 15.5 1 14.6 1.5 13.5L5 6V1Z" stroke="#93ab9f" stroke-width="1"/>
+            <path id="beaker-fill" d="M2 13.5H12V13.5C12 14.5 11.5 15.5 10.5 15.5H3.5C2.5 15.5 2 14.5 2 13.5Z" fill="#f2b84b"/>
+          </svg>
+          <span class="beaker-score" id="score-tracker">0/50</span>
+        </span>
+      </div>
+
+      <div class="ruler" id="ruler"></div>
+
+      <div class="specimen-tag" id="part-tag">Specimen <b>01</b> — Loading…</div>
+      <div class="question" id="question-text">Loading question text…</div>
+
+      <div class="options" id="options-box"></div>
+
+      <div class="footnote" id="footnote">&nbsp;</div>
+
+      <div class="actions">
+        <button class="btn-next" id="next-btn" onclick="goToNext()">Next Specimen →</button>
+      </div>
+    </div>
+
+    <div id="results-area" class="results">
+      <h2>Examination Complete</h2>
+      <svg class="beaker-final" width="60" height="76" viewBox="0 0 60 76" fill="none">
+        <path d="M21 4H39V28L54 62C57 69 51 74 44 74H16C9 74 3 69 6 62L21 28V4Z" stroke="#93ab9f" stroke-width="2"/>
+        <clipPath id="clip"><path d="M21 4H39V28L54 62C57 69 51 74 44 74H16C9 74 3 69 6 62L21 28V4Z"/></clipPath>
+        <rect id="final-fill" x="0" y="74" width="60" height="0" fill="#f2b84b" clip-path="url(#clip)"/>
+        <line x1="21" y1="4" x2="39" y2="4" stroke="#93ab9f" stroke-width="2"/>
+      </svg>
+      <div class="final-score" id="final-score">0<span>/50</span></div>
+      <div class="grade-tag" id="grade-tag">—</div>
+      <p class="comment" id="performance-comment"></p>
+      <button class="btn-restart" onclick="restartQuiz()">Run Exam Again</button>
+    </div>
+  </div>
+
+<script>
+const examQuestions = [
+  { part: "Part 1: Defining Science, Technology, and Society", q: "The word \"science\" is derived from the Latin word scientia, which means:", choices: ["Art or craft", "Knowledge", "Society", "Companion"], correctIdx: 1 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "Which of the following is defined as the system of knowledge of the natural world gained through the scientific method?", choices: ["Technology", "Society", "Science", "Humanities"], correctIdx: 2 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "The word \"technology\" comes from the Greek words techne (art or craft) and logia, which means:", choices: ["Companion", "Science", "Subject or interest", "Discovery"], correctIdx: 2 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "What is the practical application of scientifically gained knowledge for the betterment of the human situation?", choices: ["Science", "Technology", "Society", "History"], correctIdx: 1 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "The word \"society\" is derived from the Latin word societas, meaning:", choices: ["System", "Craft", "Companion", "Government"], correctIdx: 2 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "How is \"Society\" defined in the context of your STS modules?", choices: ["A systematic way of performing laboratory experiments", "A group of individuals characterized by common interest, distinctive culture, and institutions", "The commercial application of physical devices", "A political organization that strictly dictates scientific progress"], correctIdx: 1 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "What is the primary focus of the discipline \"Science, Technology, and Society\" (STS)?", choices: ["Designing advanced mechanical clocks and heavy plows", "Memorizing the Latin origins of scientific words", "The study of how society, politics, and culture affect scientific research and technological innovation, and vice versa", "Restricting the use of technology to biological sciences only"], correctIdx: 2 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "According to the interrelationship diagram in your material, Science \"informs\" Technology, while Technology:", choices: ["Ignores Society", "Demands more from Science", "Makes life easier for Society", "Rules over Society"], correctIdx: 1 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "Which of the following is a potential negative aspect of technological advancements as explicitly warned in the text?", choices: ["Making human life too simple", "Posing a threat to the way humans live and damaging the environment", "Reducing the population's dependence on natural resources", "Halting all scientific discoveries"], correctIdx: 1 },
+  { part: "Part 1: Defining Science, Technology, and Society", q: "Sir Isaac Newton's famous quote, \"If I have seen further than others, it is by standing on the shoulders of giants,\" primarily emphasizes:", choices: ["His physical height compared to other scientists", "The collaborative and cumulative nature of scientific progress building upon predecessors", "His rejection of ancient Greek astronomy", "The invention of the telescope"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Which ancient civilization contributed \"Cuneiform,\" the first recorded writing system?", choices: ["Egyptian", "Greek", "Sumerian", "Chinese"], correctIdx: 2 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "What was the primary purpose of the Sumerians' Great Ziggurat?", choices: ["It was a public market", "It served as an altar and a sacred place of their chief god", "It was a fortress for military defense", "It was a school for formal education"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "The Sumerian wheel was initially invented not for transportation, but for:", choices: ["Astronomical observation", "Building walls", "Farm work and food processes", "Spinning thread"], correctIdx: 2 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "What material, similar to thick paper, did ancient Egyptians write on using the pith of a specific wetland plant?", choices: ["Cuneiform", "Papyrus", "Parchment", "Clay tablets"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Hieroglyphics is a system of writing using symbols developed by which civilization?", choices: ["Sumerian", "Greek", "Roman", "Egyptian"], correctIdx: 3 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "What is the \"Shadoof,\" invented by ancient Egyptians?", choices: ["A device used to predict solar eclipses", "A hand-operated device used for lifting water for irrigation", "A type of heavy clay wheel", "A weapon used in early wars"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Discovered in 1902 in Greece, this device is similar to a mantle clock and was used to predict astronomical positions and eclipses:", choices: ["Aeolipile", "Antikythera Mechanism", "Shadoof", "Heavy Plow"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "What is the \"Aeolipile,\" also known as Hero's engine?", choices: ["The first recorded writing system", "An ancient water-lifting device", "A steam-powered turbine considered to be the first rudimentary steam engine", "A mechanical clock used by priests"], correctIdx: 2 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Why did the Middle Ages demand great technology in fields like weaponry, navigation, and agriculture?", choices: ["To build the Great Ziggurat", "Because wars were prevalent during this time", "To prove that the Sun was the center of the universe", "Because population growth had completely stopped"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Which Middle Ages invention made it possible to harness clay soil and stirred an agricultural revolution?", choices: ["Shadoof", "Potter's wheel", "Heavy Plow", "Spinning Wheel"], correctIdx: 2 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Around 850 AD, Chinese alchemists accidentally invented:", choices: ["The mechanical clock", "Gunpowder (black powder)", "Paper money", "The printing press"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "What was the major advantage of paper money, first utilized in the Middle Ages?", choices: ["It was made of papyrus plants", "It was much easier to transport than heavy coins", "It could be used to predict eclipses", "It was printed using the first digital computers"], correctIdx: 1 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Which development in the Middle Ages changed how days were spent and work patterns were established in cities?", choices: ["Mechanical Clock", "Shadoof", "Potter's Wheel", "Telescope"], correctIdx: 0 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "What machine was used in the Middle Ages to transform fiber into thread or yarn, which sped up weaving?", choices: ["Heavy Plow", "Printing Press", "Spinning Wheel", "Aeolipile"], correctIdx: 2 },
+  { part: "Part 2: Historical Antecedents (Ancient & Middle Ages)", q: "Who invented the printing press using cast type to address the need for publishing books at a faster rate?", choices: ["Galileo Galilei", "Johannes Gutenberg", "Zacharias Janssen", "Nicolaus Copernicus"], correctIdx: 1 },
+  { part: "Part 3: Modern Ages", q: "Who is credited with inventing the first compound microscope around 1590 (often cited as 1590/1650)?", choices: ["Galileo Galilei", "Alexander Graham Bell", "John Logie Baird", "Zacharias Janssen and his father Hans"], correctIdx: 3 },
+  { part: "Part 3: Modern Ages", q: "Whose technological contribution to the telescope drastically changed astronomy and showed that the Earth is tiny compared to the universe?", choices: ["Charles Darwin", "Nicolaus Copernicus", "Galileo Galilei", "Sigmund Freud"], correctIdx: 2 },
+  { part: "Part 3: Modern Ages", q: "Which brothers are credited with designing and operating the first engine-powered aircraft?", choices: ["The Janssen Brothers", "The Wright Brothers (Orville and Wilbur)", "The Ptolemy Brothers", "The Bell Brothers"], correctIdx: 1 },
+  { part: "Part 3: Modern Ages", q: "Who is largely credited with the invention of the modern television, successfully televising a recognizable human face in 1925?", choices: ["Alexander Graham Bell", "John Logie Baird", "Johannes Gutenberg", "Zacharias Janssen"], correctIdx: 1 },
+  { part: "Part 3: Modern Ages", q: "The telephone, which allowed people to easily connect and maintain relationships in real time, was invented by:", choices: ["John Logie Baird", "Sir Isaac Newton", "Alexander Graham Bell", "Orville Wright"], correctIdx: 2 },
+  { part: "Part 4: Intellectual Revolutions", q: "What is an intellectual revolution?", choices: ["A series of wars to conquer new lands", "A series of events leading to the convergence of modern science and the progress of scientific thinking", "A political movement to overthrow governments", "An artistic movement focused on painting and sculpting"], correctIdx: 1 },
+  { part: "Part 4: Intellectual Revolutions", q: "Jean Sylvain Bailly stated that an intellectual revolution involves:", choices: ["Expanding ancient religious scripts", "Standing on the shoulders of giants", "Sweeping away the old and establishing the new", "Creating electronic systems of communication"], correctIdx: 2 },
+  { part: "Part 4: Intellectual Revolutions", q: "Intellectual revolutions are considered to be \"paradigm shifts\" because they:", choices: ["Prevented any further scientific development", "Challenged imperfect beliefs and caused a renewed understanding of the universe", "Promoted geocentrism above all else", "Were easily accepted by everyone without any controversy"], correctIdx: 1 },
+  { part: "Part 4: Intellectual Revolutions", q: "The concept of Geocentrism, which states that the Earth is the center of the universe, was introduced by:", choices: ["Nicolaus Copernicus", "Claudius Ptolemy", "Charles Darwin", "Galileo Galilei"], correctIdx: 1 },
+  { part: "Part 4: Intellectual Revolutions", q: "The concept of Heliocentrism, which states that the Sun is at the center of the solar system, was introduced by:", choices: ["Claudius Ptolemy", "Sigmund Freud", "Nicolaus Copernicus", "Charles Darwin"], correctIdx: 2 },
+  { part: "Part 4: Intellectual Revolutions", q: "Why was Copernicus's model initially rejected by the public and some scientists?", choices: ["They thought the orbits were too complicated", "It lacked direct scientific evidence and went against common sense beliefs about a stationary Earth", "It did not include the Earth at all", "They did not believe the Sun existed"], correctIdx: 1 },
+  { part: "Part 4: Intellectual Revolutions", q: "Who was the famous astronomer who profoundly supported and helped the general public eventually accept the Copernican model?", choices: ["Sigmund Freud", "Charles Darwin", "Claudius Ptolemy", "Galileo Galilei"], correctIdx: 3 },
+  { part: "Part 4: Intellectual Revolutions", q: "Charles Darwin introduced the Theory of Evolution in his famous book titled:", choices: ["Traditional Medicine", "On the Origin of Species", "The Interpretation of Dreams", "Science and Nation Building"], correctIdx: 1 },
+  { part: "Part 4: Intellectual Revolutions", q: "What is the core concept of Darwin's \"Natural Selection\"?", choices: ["Organisms are created in their final form by a creator and never change", "Organisms develop, inherit, and adapt favorable traits for survival and reproduction", "Human beings can control the climate using technology", "Earth is the center of the solar system"], correctIdx: 1 },
+  { part: "Part 4: Intellectual Revolutions", q: "Who introduced the theory of Psychoanalysis as a scientific method to understand unconscious conflicts?", choices: ["Nicolaus Copernicus", "Charles Darwin", "Sigmund Freud", "Claudius Ptolemy"], correctIdx: 2 },
+  { part: "Part 4: Intellectual Revolutions", q: "According to Freud's Iceberg Model of the Mind, which part of our mind contains instincts, fears, and motives?", choices: ["Conscious", "Preconscious", "Unconscious", "Ego"], correctIdx: 2 },
+  { part: "Part 4: Intellectual Revolutions", q: "Freud argued that personality is a product of three conflicting elements. What are they?", choices: ["Mind, Body, and Spirit", "Id, Ego, and Superego", "Conscious, Unconscious, and Subconscious", "Past, Present, and Future"], correctIdx: 1 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "During the Pre-Colonial period in the Philippines, what was the primary way of treating illnesses?", choices: ["Chemical antibiotics", "Western surgical operations", "The use of herbal plants", "Synthetic pills"], correctIdx: 2 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "Which complicated engineering feat was accomplished by the native Cordillerans to cultivate crops on mountainsides?", choices: ["The Great Ziggurat", "Calle Crisologo", "The Banaue Rice Terraces", "Spanish stone bridges"], correctIdx: 2 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "During the Spanish Colonial Period, formal education taught:", choices: ["Only advanced engineering", "Religion, mathematics, reading, writing, health, and sanitation", "Space technology and astronomy", "Computer programming and psychoanalysis"], correctIdx: 1 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "What was the name of the prominent trade prioritized during the Spanish colonial period due to its potential for larger profits?", choices: ["Silk Road Trade", "The Galleon Trade", "Spice Route Trade", "Gold Coast Trade"], correctIdx: 1 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "Which Philippine President established the National Academy of Science and Technology (NAST) and mandated the promotion of science courses in public high schools?", choices: ["Corazon Aquino", "Fidel V. Ramos", "Gloria Macapagal-Arroyo", "Ferdinand Marcos Sr."], correctIdx: 3 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "President Corazon Aquino renamed the National Science and Technology Authority to what department to ensure cabinet representation?", choices: ["National Research Council", "Department of Science and Technology (DOST)", "Department of Information and Communications Technology (DICT)", "National Academy of Science"], correctIdx: 1 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "Who signed RA 7687 (Science and Technology Scholarship Act of 1994) and RA 8439 (Magna Carta for Scientists, Engineers, and Researchers)?", choices: ["Ferdinand Marcos Sr.", "Fidel V. Ramos", "Gloria Macapagal-Arroyo", "Rodrigo Duterte"], correctIdx: 1 },
+  { part: "Part 5: Science and Technology in Nation Building (PH)", q: "What is the name of the first Filipino-made satellite launched into space in 2016 to help improve weather forecasting and disaster mitigation?", choices: ["Agila-1", "Diwata-1", "Diwata-2", "Pedro-1"], correctIdx: 1 }
+];
+
+let curIndex = 0;
+let score = 0;
+let selectedThisTurn = false;
+
+const partTagEl = document.getElementById("part-tag");
+const qTextEl = document.getElementById("question-text");
+const optionsBox = document.getElementById("options-box");
+const qIndexEl = document.getElementById("q-index");
+const scoreTracker = document.getElementById("score-tracker");
+const nextBtn = document.getElementById("next-btn");
+const rulerEl = document.getElementById("ruler");
+const footnoteEl = document.getElementById("footnote");
+const beakerFill = document.getElementById("beaker-fill");
+
+const quizArea = document.getElementById("quiz-area");
+const resultsArea = document.getElementById("results-area");
+const finalScoreEl = document.getElementById("final-score");
+const gradeTagEl = document.getElementById("grade-tag");
+const commentEl = document.getElementById("performance-comment");
+const finalFillEl = document.getElementById("final-fill");
+
+const letters = ["A", "B", "C", "D"];
+
+function buildRuler() {
+  rulerEl.innerHTML = "";
+  for (let i = 0; i < examQuestions.length; i++) {
+    const t = document.createElement("div");
+    t.className = "tick";
+    rulerEl.appendChild(t);
+  }
+}
+
+function updateRuler() {
+  const ticks = rulerEl.children;
+  for (let i = 0; i < ticks.length; i++) {
+    ticks[i].classList.remove("done", "current");
+    if (i < curIndex) ticks[i].classList.add("done");
+    if (i === curIndex) ticks[i].classList.add("current");
+  }
+}
+
+function updateBeaker() {
+  const pct = score / examQuestions.length;
+  const h = Math.max(2, pct * 14);
+  beakerFill.setAttribute("d", `M2 ${15.5 - h}H12V15.5C12 15.5 12 15.5 12 15.5C12 15.5 11.5 15.5 10.5 15.5H3.5C2.5 15.5 2 15.5 2 15.5V${15.5 - h}Z`);
+}
+
+function drawQuestion() {
+  selectedThisTurn = false;
+  nextBtn.style.display = "none";
+  optionsBox.innerHTML = "";
+  footnoteEl.textContent = "\u00A0";
+
+  const curData = examQuestions[curIndex];
+  const partMatch = curData.part.match(/Part (\d+): (.+)/);
+  const partNum = partMatch ? partMatch[1].padStart(2, "0") : "00";
+  const partName = partMatch ? partMatch[2] : curData.part;
+
+  partTagEl.innerHTML = `Specimen <b>${partNum}</b> — ${partName}`;
+  qTextEl.textContent = curData.q;
+  qIndexEl.textContent = String(curIndex + 1).padStart(2, "0");
+  scoreTracker.textContent = `${score}/${examQuestions.length}`;
+
+  updateRuler();
+  updateBeaker();
+
+  curData.choices.forEach((choice, index) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.innerHTML = `<span class="tile"><span class="idx">${index + 1}</span>${letters[index]}</span><span class="opt-label">${choice}</span>`;
+    btn.onclick = () => selectChoice(index, btn);
+    optionsBox.appendChild(btn);
+  });
+}
+
+function selectChoice(index, btn) {
+  if (selectedThisTurn) return;
+  selectedThisTurn = true;
+
+  const correctIndex = examQuestions[curIndex].correctIdx;
+  const buttons = optionsBox.getElementsByTagName("button");
+
+  if (index === correctIndex) {
+    btn.classList.add("correct");
+    score++;
+    scoreTracker.textContent = `${score}/${examQuestions.length}`;
+    footnoteEl.textContent = "Correct — logged to the record.";
+    updateBeaker();
+  } else {
+    btn.classList.add("wrong");
+    buttons[correctIndex].classList.add("correct");
+    footnoteEl.textContent = "Not quite — correct answer marked above.";
+  }
+
+  for (let b of buttons) b.disabled = true;
+  nextBtn.style.display = "block";
+}
+
+function goToNext() {
+  curIndex++;
+  if (curIndex < examQuestions.length) {
+    drawQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function endQuiz() {
+  updateRuler();
+  quizArea.style.display = "none";
+  resultsArea.style.display = "block";
+  finalScoreEl.innerHTML = `${score}<span>/${examQuestions.length}</span>`;
+
+  const pct = (score / examQuestions.length) * 100;
+  finalFillEl.setAttribute("height", (pct / 100) * 74);
+  finalFillEl.setAttribute("y", 74 - (pct / 100) * 74);
+
+  if (pct >= 90) {
+    gradeTagEl.textContent = "MASTERY";
+    gradeTagEl.style.background = "var(--green-deep)";
+    gradeTagEl.style.color = "var(--green)";
+    commentEl.textContent = "Excellent mastery — you're fully ready for this exam.";
+  } else if (pct >= 75) {
+    gradeTagEl.textContent = "PROFICIENT";
+    gradeTagEl.style.background = "#3a3421";
+    gradeTagEl.style.color = "var(--amber)";
+    commentEl.textContent = "Great work — a bit more review will secure the top marks.";
+  } else {
+    gradeTagEl.textContent = "NEEDS REVIEW";
+    gradeTagEl.style.background = "var(--red-deep)";
+    gradeTagEl.style.color = "var(--red)";
+    commentEl.textContent = "Revisit the material and run the exam again.";
+  }
+}
+
+function restartQuiz() {
+  curIndex = 0;
+  score = 0;
+  quizArea.style.display = "block";
+  resultsArea.style.display = "none";
+  drawQuestion();
+}
+
+buildRuler();
+drawQuestion();
+</script>
+</body>
+</html>
